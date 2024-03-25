@@ -11,9 +11,7 @@ import Ajv from 'ajv';
 import { wrapAjvCompilerWithTypeProvider } from '@toomuchdesign/ajv-type-provider-json-schema-to-ts';
 
 const ajv = new Ajv();
-const compile = wrapAjvCompilerWithTypeProvider((schema) =>
-  ajv.compile(schema),
-);
+const compile = wrapAjvCompilerWithTypeProvider(ajv.compile.bind(ajv));
 
 const schema = {
   type: 'object',
@@ -54,7 +52,7 @@ import { wrapAjvCompilerWithTypeProvider } from '@toomuchdesign/ajv-type-provide
 
 const ajv = new Ajv();
 const compile = wrapAjvCompilerWithTypeProvider<{ parseNotKeyword: true }>(
-  (schema) => ajv.compile(schema),
+  ajv.compile.bind(ajv),
 );
 ```
 
@@ -69,7 +67,6 @@ npx changeset
 ## Contributing
 
 - Consider support for non-sync validators
-- Consider accepting `ajv.compile` instead of current function
 
 [ci-badge]: https://github.com/toomuchdesign/ajv-type-provider-json-schema-to-ts/actions/workflows/ci.yml/badge.svg
 [ci]: https://github.com/toomuchdesign/ajv-type-provider-json-schema-to-ts/actions/workflows/ci.yml
