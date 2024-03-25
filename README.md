@@ -44,6 +44,20 @@ npm i json-schema-to-ts
 npm i @toomuchdesign/ajv-type-provider-json-schema-to-ts
 ```
 
+## Options
+
+`@toomuchdesign/ajv-type-provider-json-schema-to-ts` accepts `json-schema-to-ts` [FromSchema options](https://github.com/ThomasAribart/json-schema-to-ts?tab=readme-ov-file#fromschema):
+
+```ts
+import Ajv from 'ajv';
+import { wrapAjvCompilerWithTypeProvider } from '@toomuchdesign/ajv-type-provider-json-schema-to-ts';
+
+const ajv = new Ajv();
+const compile = wrapAjvCompilerWithTypeProvider<{ parseNotKeyword: true }>(
+  (schema) => ajv.compile(schema),
+);
+```
+
 ## Contributing
 
 Any contribution should be provided with a `changesets` update:
@@ -51,6 +65,11 @@ Any contribution should be provided with a `changesets` update:
 ```
 npx changeset
 ```
+
+## Contributing
+
+- Consider support for non-sync validators
+- Consider accepting `ajv.compile` instead of current function
 
 [ci-badge]: https://github.com/toomuchdesign/ajv-type-provider-json-schema-to-ts/actions/workflows/ci.yml/badge.svg
 [ci]: https://github.com/toomuchdesign/ajv-type-provider-json-schema-to-ts/actions/workflows/ci.yml
