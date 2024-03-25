@@ -29,7 +29,7 @@ const validate = compile(schema);
 let data: unknown = { foo: 6 };
 
 if (validate(data)) {
-  // data is typed
+  // data type inferred from schema
   console.log('Validation ok', data);
 } else {
   // validate is the usual AJV validate function
@@ -52,9 +52,9 @@ Any contribution should be provided with a `changesets` update:
 npx changeset
 ```
 
-[ci-badge]: https://github.com/toomuchdesign/@toomuchdesign/ajv-type-provider-json-schema-to-ts/actions/workflows/ci.yml/badge.svg
-[ci]: https://github.com/toomuchdesign/@toomuchdesign/ajv-type-provider-json-schema-to-ts/actions/workflows/ci.yml
-[coveralls-badge]: https://coveralls.io/repos/github/toomuchdesign/@toomuchdesign/ajv-type-provider-json-schema-to-ts/badge.svg?branch=master
-[coveralls]: https://coveralls.io/github/toomuchdesign/@toomuchdesign/ajv-type-provider-json-schema-to-ts?branch=master
+[ci-badge]: https://github.com/toomuchdesign/ajv-type-provider-json-schema-to-ts/actions/workflows/ci.yml/badge.svg
+[ci]: https://github.com/toomuchdesign/ajv-type-provider-json-schema-to-ts/actions/workflows/ci.yml
+[coveralls-badge]: https://coveralls.io/repos/github/toomuchdesign/ajv-type-provider-json-schema-to-ts/badge.svg?branch=master
+[coveralls]: https://coveralls.io/github/toomuchdesign/ajv-type-provider-json-schema-to-ts?branch=master
 [npm]: https://www.npmjs.com/package/@toomuchdesign/ajv-type-provider-json-schema-to-ts
 [npm-version-badge]: https://img.shields.io/npm/v/@toomuchdesign/ajv-type-provider-json-schema-to-ts.svg
