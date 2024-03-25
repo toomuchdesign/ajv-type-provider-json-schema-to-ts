@@ -22,7 +22,12 @@
     "source:check": "npm run prettier:check && npm run type:check",
     "source:fix": "npm run prettier:fix"
   },
-  "keywords": [],
+  "keywords": [
+    "ajv",
+    "json-schema",
+    "json-schema-to-ts",
+    "type provider"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/toomuchdesign/ajv-type-provider-json-schema-to-ts.git"

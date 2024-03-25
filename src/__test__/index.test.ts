@@ -17,9 +17,7 @@ const schema = {
 describe('wrapAjvCompilerWithTypeProvider', () => {
   describe('successful validation', () => {
     it('provides expected type guard and validator props', () => {
-      const compile = wrapAjvCompilerWithTypeProvider((schema) =>
-        ajv.compile(schema),
-      );
+      const compile = wrapAjvCompilerWithTypeProvider(ajv.compile.bind(ajv));
       const validate = compile(schema);
       const data: unknown = { foo: 6 };
 
@@ -36,9 +34,7 @@ describe('wrapAjvCompilerWithTypeProvider', () => {
 
   describe('failing validation', () => {
     it('provides expected type guard and validator props', () => {
-      const compile = wrapAjvCompilerWithTypeProvider((schema) =>
-        ajv.compile(schema),
-      );
+      const compile = wrapAjvCompilerWithTypeProvider(ajv.compile.bind(ajv));
       const validate = compile(schema);
       const data: unknown = { foo: 'wrong' };
 
@@ -65,7 +61,7 @@ describe('wrapAjvCompilerWithTypeProvider', () => {
 
   it('accepts json-schema-to-ts FromSchema options', () => {
     const compile = wrapAjvCompilerWithTypeProvider<{ parseNotKeyword: true }>(
-      (schema) => ajv.compile(schema),
+      ajv.compile.bind(ajv),
     );
     const schema = {
       type: 'array',
