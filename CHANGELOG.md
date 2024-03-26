@@ -1,5 +1,11 @@
 # @toomuchdesign/ajv-type-provider-json-schema-to-ts
 
+## 0.2.0
+
+### Minor Changes
+
+- a91cacb: Compiler accepts forced inferred types as 1st generic
+
 ## 0.1.1
 
 ### Patch Changes
