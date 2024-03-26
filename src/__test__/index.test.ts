@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, assertType, expectTypeOf } from 'vitest';
 import Ajv from 'ajv';
 import { wrapAjvCompilerWithTypeProvider } from '../index';
 
@@ -22,8 +22,10 @@ describe('wrapAjvCompilerWithTypeProvider', () => {
       const data: unknown = { foo: 6 };
 
       if (validate(data)) {
-        const expectedData: { foo: number; bar?: string } = data;
-        expect(expectedData).toEqual(data);
+        expectTypeOf(data).toMatchTypeOf<{
+          bar?: string;
+          foo: number;
+        }>();
       } else {
         expect.unreachable('Validation should not fail');
       }
@@ -51,8 +53,7 @@ describe('wrapAjvCompilerWithTypeProvider', () => {
       if (validate(data)) {
         expect.unreachable('Validation should not pass');
       } else {
-        const expectedData: unknown = data;
-        expect(expectedData).toEqual(data);
+        expectTypeOf(data).toBeUnknown();
       }
 
       expect(validate.errors).toEqual([
@@ -86,8 +87,7 @@ describe('wrapAjvCompilerWithTypeProvider', () => {
     const data: unknown = [1, 2];
 
     if (validate(data)) {
-      const expectedData: [] | [1, 2] = data;
-      expect(expectedData).toEqual(data);
+      expectTypeOf(data).toMatchTypeOf<[] | [1, 2]>();
     } else {
       expect.unreachable('Validation should not fail');
     }
