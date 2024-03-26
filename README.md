@@ -54,6 +54,43 @@ const compile = wrapAjvCompilerWithTypeProvider<{ parseNotKeyword: true }>(
 );
 ```
 
+`references` option can be used to resolve `$ref` schema types:
+
+```ts
+const userSchema = {
+  $id: 'http://example.com/schemas/user.json',
+  type: 'object',
+  properties: {
+    name: { type: 'string' },
+    age: { type: 'integer' },
+  },
+  required: ['name', 'age'],
+  additionalProperties: false,
+} as const;
+
+const usersSchema = {
+  type: 'array',
+  items: {
+    $ref: 'http://example.com/schemas/user.json',
+  },
+} as const;
+
+// Register ref schema in ajv
+ajv.addSchema(userSchema);
+
+const compile = wrapAjvCompilerWithTypeProvider<{
+  // Register ref schema type provider
+  references: [typeof userSchema];
+}>(ajv.compile.bind(ajv));
+
+const validate = compile(schema);
+
+if (validate(data)) {
+  // Inferred data with resolved $ref schemas
+  const expectedData: { name: string; age: number }[] = data;
+}
+```
+
 ### `compiler` options
 
 The returned compiler accepts a generic which force the inferred of the returned validation function:
