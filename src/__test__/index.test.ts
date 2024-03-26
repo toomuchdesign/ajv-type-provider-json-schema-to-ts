@@ -70,26 +70,52 @@ describe('wrapAjvCompilerWithTypeProvider', () => {
     });
   });
 
-  it('accepts json-schema-to-ts FromSchema options', () => {
-    const compile = wrapAjvCompilerWithTypeProvider<{ parseNotKeyword: true }>(
-      ajv.compile.bind(ajv),
-    );
-    const schema = {
-      type: 'array',
-      items: [{ const: 1 }, { const: 2 }],
-      additionalItems: false,
-      not: {
-        const: [1],
-      },
-    } as const;
+  describe('1st generic argument', () => {
+    it('accepts json-schema-to-ts FromSchema options and customizes type inference', () => {
+      const compile = wrapAjvCompilerWithTypeProvider<{
+        parseNotKeyword: true;
+      }>(ajv.compile.bind(ajv));
+      const schema = {
+        type: 'array',
+        items: [{ const: 1 }, { const: 2 }],
+        additionalItems: false,
+        not: {
+          const: [1],
+        },
+      } as const;
 
-    const validate = compile(schema);
-    const data: unknown = [1, 2];
+      const validate = compile(schema);
+      const data: unknown = [1, 2];
 
-    if (validate(data)) {
-      expectTypeOf(data).toMatchTypeOf<[] | [1, 2]>();
-    } else {
-      expect.unreachable('Validation should not fail');
-    }
+      if (validate(data)) {
+        expectTypeOf(data).toMatchTypeOf<[] | [1, 2]>();
+      } else {
+        expect.unreachable('Validation should not fail');
+      }
+    });
+  });
+
+  describe('"compiler" 1st generic argument', () => {
+    it('accepts forced inferred type', () => {
+      const compile = wrapAjvCompilerWithTypeProvider(ajv.compile.bind(ajv));
+      const schema = {
+        type: 'object',
+        properties: {
+          foo: { type: 'integer' },
+          bar: { type: 'string' },
+        },
+        required: ['foo'],
+        additionalProperties: false,
+      } as const;
+
+      const validate = compile<{ hello: string }>(schema);
+      const data: unknown = { foo: 6 };
+
+      if (validate(data)) {
+        expectTypeOf(data).toMatchTypeOf<{ hello: string }>();
+      } else {
+        expect.unreachable('Validation should not fail');
+      }
+    });
   });
 });

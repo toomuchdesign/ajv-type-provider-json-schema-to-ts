@@ -15,7 +15,13 @@ export const wrapAjvCompilerWithTypeProvider =
   <FromSchemaUserOptions extends FromSchemaOptions = FromSchemaDefaultOptions>(
     compiler: Compiler,
   ) =>
-  <Schema extends JSONSchema, Data = FromSchema<Schema, FromSchemaUserOptions>>(
+  <
+    ForcedData = void,
+    Schema extends JSONSchema = {},
+    Data = ForcedData extends void
+      ? FromSchema<Schema, FromSchemaUserOptions>
+      : ForcedData,
+  >(
     schema: Schema,
   ): ValidateFunction<Data> => {
     return compiler<Data>(schema);
