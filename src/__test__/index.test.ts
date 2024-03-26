@@ -4,20 +4,20 @@ import { wrapAjvCompilerWithTypeProvider } from '../index';
 
 const ajv = new Ajv();
 
-const schema = {
-  type: 'object',
-  properties: {
-    foo: { type: 'integer' },
-    bar: { type: 'string' },
-  },
-  required: ['foo'],
-  additionalProperties: false,
-} as const;
-
 describe('wrapAjvCompilerWithTypeProvider', () => {
   describe('successful validation', () => {
     it('provides expected type guard and validator props', () => {
       const compile = wrapAjvCompilerWithTypeProvider(ajv.compile.bind(ajv));
+      const schema = {
+        type: 'object',
+        properties: {
+          foo: { type: 'integer' },
+          bar: { type: 'string' },
+        },
+        required: ['foo'],
+        additionalProperties: false,
+      } as const;
+
       const validate = compile(schema);
       const data: unknown = { foo: 6 };
 
@@ -35,6 +35,16 @@ describe('wrapAjvCompilerWithTypeProvider', () => {
   describe('failing validation', () => {
     it('provides expected type guard and validator props', () => {
       const compile = wrapAjvCompilerWithTypeProvider(ajv.compile.bind(ajv));
+      const schema = {
+        type: 'object',
+        properties: {
+          foo: { type: 'integer' },
+          bar: { type: 'string' },
+        },
+        required: ['foo'],
+        additionalProperties: false,
+      } as const;
+
       const validate = compile(schema);
       const data: unknown = { foo: 'wrong' };
 
