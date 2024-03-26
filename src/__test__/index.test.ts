@@ -1,4 +1,4 @@
-import { describe, it, expect, assertType, expectTypeOf } from 'vitest';
+import { describe, it, expect, expectTypeOf } from 'vitest';
 import Ajv from 'ajv';
 import { wrapAjvCompilerWithTypeProvider } from '../index';
 
@@ -93,6 +93,46 @@ describe('wrapAjvCompilerWithTypeProvider', () => {
         expect.unreachable('Validation should not fail');
       }
     });
+  });
+
+  it('resolves $refs with json-schema-to-ts FromSchema "references" option', () => {
+    const userSchema = {
+      $id: 'http://example.com/schemas/user.json',
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        age: { type: 'integer' },
+      },
+      required: ['name', 'age'],
+      additionalProperties: false,
+    } as const;
+
+    const usersSchema = {
+      type: 'array',
+      items: {
+        $ref: 'http://example.com/schemas/user.json',
+      },
+    } as const;
+
+    // Register ref schema in ajv
+    ajv.addSchema(userSchema);
+
+    const compile = wrapAjvCompilerWithTypeProvider<{
+      // Register ref schema in type provider
+      references: [typeof userSchema];
+    }>(ajv.compile.bind(ajv));
+
+    const validate = compile(usersSchema);
+    const data: unknown = [
+      { name: 'foo', age: 3 },
+      { name: 'bar', age: 4 },
+    ];
+
+    if (validate(data)) {
+      expectTypeOf(data).toMatchTypeOf<{ name: string; age: number }[]>();
+    } else {
+      expect.unreachable('Validation should not fail');
+    }
   });
 
   describe('"compiler" 1st generic argument', () => {
