@@ -44,9 +44,9 @@ npm i @toomuchdesign/ajv-type-provider-json-schema-to-ts
 
 ## API
 
-### `FromSchema` options
+### `wrapAjvCompilerWithTypeProvider` options
 
-`wrapAjvCompilerWithTypeProvider` accepts [json-schema-to-ts `FromSchema` options](https://github.com/ThomasAribart/json-schema-to-ts?tab=readme-ov-file#fromschema) to configure inferred types output:
+`wrapAjvCompilerWithTypeProvider` accepts [json-schema-to-ts `FromSchema` options](https://github.com/ThomasAribart/json-schema-to-ts/blob/main/src/definitions/fromSchemaOptions.ts) to configure inferred types output:
 
 ```ts
 const compile = wrapAjvCompilerWithTypeProvider<{ parseNotKeyword: true }>(
@@ -54,9 +54,27 @@ const compile = wrapAjvCompilerWithTypeProvider<{ parseNotKeyword: true }>(
 );
 ```
 
-### `FromSchema` options
+### `compiler` options
 
-The returned compiler can be provided
+The returned compiler accepts a generic which force the inferred of the returned validation function:
+
+```ts
+const compile = wrapAjvCompilerWithTypeProvider(ajv.compile.bind(ajv));
+const schema = {
+  type: 'object',
+  properties: {
+    foo: { type: 'integer' },
+  },
+  required: ['foo'],
+} as const;
+const validate = compile<{ hello: string }>(schema);
+const data: unknown = { foo: 6 };
+
+if (validate(data)) {
+  // Data type forced to be equal to the provided one
+  const expectedData: { hello: string } = data;
+}
+```
 
 ## Contributing
 
