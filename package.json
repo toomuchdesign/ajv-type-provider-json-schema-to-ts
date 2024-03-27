@@ -1,6 +1,6 @@
 {
   "name": "@toomuchdesign/ajv-type-provider-json-schema-to-ts",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "An ajv type provider based on json-schema-to-ts",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
