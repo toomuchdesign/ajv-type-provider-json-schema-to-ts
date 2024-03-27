@@ -38,7 +38,6 @@ if (validate(data)) {
 ## Installation
 
 ```
-npm i json-schema-to-ts
 npm i @toomuchdesign/ajv-type-provider-json-schema-to-ts
 ```
 
