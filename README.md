@@ -43,13 +43,41 @@ npm i @toomuchdesign/ajv-type-provider-json-schema-to-ts
 
 ## API
 
-### `wrapAjvCompileWithTypeProvider` options
+### `wrapAjvCompileWithTypeProvider`
 
-`wrapAjvCompileWithTypeProvider` accepts [json-schema-to-ts `FromSchema` options](https://github.com/ThomasAribart/json-schema-to-ts/blob/main/src/definitions/fromSchemaOptions.ts) to configure inferred types output:
+Enhance Ajv `compile` method with type inference:
+
+```ts
+import Ajv from 'ajv';
+import { wrapAjvCompileWithTypeProvider } from '@toomuchdesign/ajv-type-provider-json-schema-to-ts';
+
+const ajv = new Ajv();
+const compile = wrapAjvCompileWithTypeProvider(ajv.compile.bind(ajv));
+```
+
+### `wrapAjvValidateWithTypeProvider`
+
+Enhance Ajv `validate` method with type inference:
+
+```ts
+import Ajv from 'ajv';
+import { wrapAjvValidateWithTypeProvider } from '@toomuchdesign/ajv-type-provider-json-schema-to-ts';
+
+const ajv = new Ajv();
+const validate = wrapAjvValidateWithTypeProvider(ajv.validate.bind(ajv));
+```
+
+### Type provider options
+
+`wrapAjvCompileWithTypeProvider` and `wrapAjvValidateWithTypeProvider` accept a [json-schema-to-ts `FromSchema` option object](https://github.com/ThomasAribart/json-schema-to-ts/blob/main/src/definitions/fromSchemaOptions.ts) to configure inferred types output:
 
 ```ts
 const compile = wrapAjvCompileWithTypeProvider<{ parseNotKeyword: true }>(
   ajv.compile.bind(ajv),
+);
+
+const validate = wrapAjvValidateWithTypeProvider<{ parseNotKeyword: true }>(
+  ajv.validate.bind(ajv),
 );
 ```
 
@@ -90,28 +118,6 @@ if (validate(data)) {
 }
 ```
 
-### `compiler` options
-
-The returned compiler accepts a generic which force the inferred of the returned validation function:
-
-```ts
-const compile = wrapAjvCompileWithTypeProvider(ajv.compile.bind(ajv));
-const schema = {
-  type: 'object',
-  properties: {
-    foo: { type: 'integer' },
-  },
-  required: ['foo'],
-} as const;
-const validate = compile<{ hello: string }>(schema);
-const data: unknown = { foo: 6 };
-
-if (validate(data)) {
-  // Data type forced to be equal to the provided one
-  const expectedData: { hello: string } = data;
-}
-```
-
 ## Contributing
 
 Any contribution should be provided with a `changesets` update:
@@ -119,10 +125,6 @@ Any contribution should be provided with a `changesets` update:
 ```
 npx changeset
 ```
-
-## TODO
-
-- Consider support for non-sync validators
 
 [ci-badge]: https://github.com/toomuchdesign/ajv-type-provider-json-schema-to-ts/actions/workflows/ci.yml/badge.svg
 [ci]: https://github.com/toomuchdesign/ajv-type-provider-json-schema-to-ts/actions/workflows/ci.yml
