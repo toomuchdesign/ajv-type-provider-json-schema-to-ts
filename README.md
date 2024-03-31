@@ -118,6 +118,20 @@ if (validate(data)) {
 }
 ```
 
+## Developer notes
+
+The current API is completely decoupled from `Ajv`. This means enhancing `Ajv` methods singularly, bypassing their original type implementation.
+
+A different approach could consist of `Ajv` exposing a hook to provide external type inference implementation, as done with [Fastify's type providers](https://fastify.dev/docs/latest/Reference/Type-Providers/):
+
+```ts
+import Ajv from 'ajv';
+import type { JsonSchemaToTsProvider } from '@toomuchdesign/ajv-type-provider-json-schema-to-ts';
+
+const ajv = new Ajv();
+const typedAjv = ajv.withTypeProvider<JsonSchemaToTsProvider>();
+```
+
 ## Contributing
 
 Any contribution should be provided with a `changesets` update:
