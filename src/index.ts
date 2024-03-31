@@ -26,3 +26,22 @@ export const wrapAjvCompileWithTypeProvider =
   ): ValidateFunction<InferredData> => {
     return compiler(schema);
   };
+
+type Validate = (schema: JSONSchema, data: unknown) => boolean;
+
+export const wrapAjvValidateWithTypeProvider =
+  <FromSchemaUserOptions extends FromSchemaOptions = FromSchemaDefaultOptions>(
+    validate: Validate,
+  ) =>
+  <
+    Data = void,
+    Schema extends JSONSchema = {},
+    InferredData = Data extends void
+      ? FromSchema<Schema, FromSchemaUserOptions>
+      : Data,
+  >(
+    schema: Schema,
+    data: unknown,
+  ): data is InferredData => {
+    return validate(schema, data);
+  };
