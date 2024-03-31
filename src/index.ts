@@ -16,13 +16,13 @@ export const wrapAjvCompileWithTypeProvider =
     compiler: Compile,
   ) =>
   <
-    ForcedData = void,
+    Data = void,
     Schema extends JSONSchema = {},
-    Data = ForcedData extends void
+    InferredData = Data extends void
       ? FromSchema<Schema, FromSchemaUserOptions>
-      : ForcedData,
+      : Data,
   >(
     schema: Schema,
-  ): ValidateFunction<Data> => {
-    return compiler<Data>(schema);
+  ): ValidateFunction<InferredData> => {
+    return compiler(schema);
   };
