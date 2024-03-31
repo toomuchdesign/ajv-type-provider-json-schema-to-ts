@@ -1,13 +1,13 @@
 import { describe, it, expect, expectTypeOf } from 'vitest';
 import Ajv from 'ajv';
-import { wrapAjvCompileWithTypeProvider } from '../index';
+import { enhanceCompileWithTypeInference } from '../index';
 
 const ajv = new Ajv();
 
-describe('wrapAjvCompileWithTypeProvider', () => {
+describe('enhanceCompileWithTypeInference', () => {
   describe('successful validation', () => {
     it('provides expected type guard and validator props', () => {
-      const compile = wrapAjvCompileWithTypeProvider(ajv.compile.bind(ajv));
+      const compile = enhanceCompileWithTypeInference(ajv.compile.bind(ajv));
       const schema = {
         type: 'object',
         properties: {
@@ -36,7 +36,7 @@ describe('wrapAjvCompileWithTypeProvider', () => {
 
   describe('failing validation', () => {
     it('provides expected type guard and validator props', () => {
-      const compile = wrapAjvCompileWithTypeProvider(ajv.compile.bind(ajv));
+      const compile = enhanceCompileWithTypeInference(ajv.compile.bind(ajv));
       const schema = {
         type: 'object',
         properties: {
@@ -72,7 +72,7 @@ describe('wrapAjvCompileWithTypeProvider', () => {
 
   describe('1st generic argument', () => {
     it('accepts json-schema-to-ts FromSchema options and customizes type inference', () => {
-      const compile = wrapAjvCompileWithTypeProvider<{
+      const compile = enhanceCompileWithTypeInference<{
         parseNotKeyword: true;
       }>(ajv.compile.bind(ajv));
       const schema = {
@@ -118,7 +118,7 @@ describe('wrapAjvCompileWithTypeProvider', () => {
     // Register ref schema in ajv
     ajv.addSchema(userSchema);
 
-    const compile = wrapAjvCompileWithTypeProvider<{
+    const compile = enhanceCompileWithTypeInference<{
       // Register ref schema in type provider
       references: [typeof userSchema];
     }>(ajv.compile.bind(ajv));
@@ -138,7 +138,7 @@ describe('wrapAjvCompileWithTypeProvider', () => {
 
   describe('"compiler" 1st generic argument', () => {
     it('accepts forced inferred type', () => {
-      const compile = wrapAjvCompileWithTypeProvider(ajv.compile.bind(ajv));
+      const compile = enhanceCompileWithTypeInference(ajv.compile.bind(ajv));
       const schema = {
         type: 'object',
         properties: {

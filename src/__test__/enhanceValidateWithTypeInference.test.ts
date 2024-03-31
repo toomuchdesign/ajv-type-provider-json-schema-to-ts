@@ -1,13 +1,13 @@
 import { describe, it, expect, expectTypeOf } from 'vitest';
 import Ajv from 'ajv';
-import { wrapAjvValidateWithTypeProvider } from '../index';
+import { enhanceValidateWithTypeInference } from '../index';
 
 const ajv = new Ajv();
 
-describe('wrapAjvValidateWithTypeProvider', () => {
+describe('enhanceValidateWithTypeInference', () => {
   describe('successful validation', () => {
     it('provides expected type guard and validator props', () => {
-      const validate = wrapAjvValidateWithTypeProvider(ajv.validate.bind(ajv));
+      const validate = enhanceValidateWithTypeInference(ajv.validate.bind(ajv));
       const schema = {
         type: 'object',
         properties: {
@@ -35,7 +35,7 @@ describe('wrapAjvValidateWithTypeProvider', () => {
 
   describe('failing validation', () => {
     it('provides expected type guard and validator props', () => {
-      const validate = wrapAjvValidateWithTypeProvider(ajv.validate.bind(ajv));
+      const validate = enhanceValidateWithTypeInference(ajv.validate.bind(ajv));
       const schema = {
         type: 'object',
         properties: {
@@ -70,7 +70,7 @@ describe('wrapAjvValidateWithTypeProvider', () => {
 
   describe('1st generic argument', () => {
     it('accepts json-schema-to-ts FromSchema options and customizes type inference', () => {
-      const validate = wrapAjvValidateWithTypeProvider<{
+      const validate = enhanceValidateWithTypeInference<{
         parseNotKeyword: true;
       }>(ajv.validate.bind(ajv));
       const schema = {
@@ -115,7 +115,7 @@ describe('wrapAjvValidateWithTypeProvider', () => {
     // Register ref schema in ajv
     ajv.addSchema(userSchema);
 
-    const validate = wrapAjvValidateWithTypeProvider<{
+    const validate = enhanceValidateWithTypeInference<{
       // Register ref schema in type provider
       references: [typeof userSchema];
     }>(ajv.validate.bind(ajv));
@@ -134,7 +134,7 @@ describe('wrapAjvValidateWithTypeProvider', () => {
 
   describe('"compiler" 1st generic argument', () => {
     it('accepts forced inferred type', () => {
-      const validate = wrapAjvValidateWithTypeProvider(ajv.validate.bind(ajv));
+      const validate = enhanceValidateWithTypeInference(ajv.validate.bind(ajv));
       const schema = {
         type: 'object',
         properties: {

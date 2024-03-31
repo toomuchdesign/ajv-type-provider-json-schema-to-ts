@@ -8,10 +8,10 @@ An [ajv](https://ajv.js.org/) type provider based on [json-schema-to-ts](https:/
 
 ```ts
 import Ajv from 'ajv';
-import { wrapAjvCompileWithTypeProvider } from '@toomuchdesign/ajv-type-provider-json-schema-to-ts';
+import { enhanceCompileWithTypeInference } from '@toomuchdesign/ajv-type-provider-json-schema-to-ts';
 
 const ajv = new Ajv();
-const compile = wrapAjvCompileWithTypeProvider(ajv.compile.bind(ajv));
+const compile = enhanceCompileWithTypeInference(ajv.compile.bind(ajv));
 
 const schema = {
   type: 'object',
@@ -43,40 +43,40 @@ npm i @toomuchdesign/ajv-type-provider-json-schema-to-ts
 
 ## API
 
-### `wrapAjvCompileWithTypeProvider`
+### `enhanceCompileWithTypeInference`
 
 Enhance Ajv `compile` method with type inference:
 
 ```ts
 import Ajv from 'ajv';
-import { wrapAjvCompileWithTypeProvider } from '@toomuchdesign/ajv-type-provider-json-schema-to-ts';
+import { enhanceCompileWithTypeInference } from '@toomuchdesign/ajv-type-provider-json-schema-to-ts';
 
 const ajv = new Ajv();
-const compile = wrapAjvCompileWithTypeProvider(ajv.compile.bind(ajv));
+const compile = enhanceCompileWithTypeInference(ajv.compile.bind(ajv));
 ```
 
-### `wrapAjvValidateWithTypeProvider`
+### `enhanceValidateWithTypeInference`
 
 Enhance Ajv `validate` method with type inference:
 
 ```ts
 import Ajv from 'ajv';
-import { wrapAjvValidateWithTypeProvider } from '@toomuchdesign/ajv-type-provider-json-schema-to-ts';
+import { enhanceValidateWithTypeInference } from '@toomuchdesign/ajv-type-provider-json-schema-to-ts';
 
 const ajv = new Ajv();
-const validate = wrapAjvValidateWithTypeProvider(ajv.validate.bind(ajv));
+const validate = enhanceValidateWithTypeInference(ajv.validate.bind(ajv));
 ```
 
 ### Type provider options
 
-`wrapAjvCompileWithTypeProvider` and `wrapAjvValidateWithTypeProvider` accept a [json-schema-to-ts `FromSchema` option object](https://github.com/ThomasAribart/json-schema-to-ts/blob/main/src/definitions/fromSchemaOptions.ts) to configure inferred types output:
+`enhanceCompileWithTypeInference` and `enhanceValidateWithTypeInference` accept a [json-schema-to-ts `FromSchema` option object](https://github.com/ThomasAribart/json-schema-to-ts/blob/main/src/definitions/fromSchemaOptions.ts) to configure inferred types output:
 
 ```ts
-const compile = wrapAjvCompileWithTypeProvider<{ parseNotKeyword: true }>(
+const compile = enhanceCompileWithTypeInference<{ parseNotKeyword: true }>(
   ajv.compile.bind(ajv),
 );
 
-const validate = wrapAjvValidateWithTypeProvider<{ parseNotKeyword: true }>(
+const validate = enhanceValidateWithTypeInference<{ parseNotKeyword: true }>(
   ajv.validate.bind(ajv),
 );
 ```
@@ -105,7 +105,7 @@ const usersSchema = {
 // Register ref schema in ajv
 ajv.addSchema(userSchema);
 
-const compile = wrapAjvCompileWithTypeProvider<{
+const compile = enhanceCompileWithTypeInference<{
   // Register ref schema type provider
   references: [typeof userSchema];
 }>(ajv.compile.bind(ajv));

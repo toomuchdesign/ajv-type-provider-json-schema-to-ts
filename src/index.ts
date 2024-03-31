@@ -11,7 +11,7 @@ type Compile = <Data = unknown>(
   _meta?: boolean,
 ) => ValidateFunction<Data>;
 
-export const wrapAjvCompileWithTypeProvider =
+export const enhanceCompileWithTypeInference =
   <FromSchemaUserOptions extends FromSchemaOptions = FromSchemaDefaultOptions>(
     compiler: Compile,
   ) =>
@@ -29,7 +29,7 @@ export const wrapAjvCompileWithTypeProvider =
 
 type Validate = (schema: JSONSchema, data: unknown) => boolean;
 
-export const wrapAjvValidateWithTypeProvider =
+export const enhanceValidateWithTypeInference =
   <FromSchemaUserOptions extends FromSchemaOptions = FromSchemaDefaultOptions>(
     validate: Validate,
   ) =>
