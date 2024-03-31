@@ -77,6 +77,7 @@ describe('wrapAjvValidateWithTypeProvider', () => {
         type: 'array',
         items: [{ const: 1 }, { const: 2 }],
         additionalItems: false,
+        minItems: 2,
         not: {
           const: [1],
         },
