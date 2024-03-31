@@ -6,14 +6,14 @@ import type {
 } from 'json-schema-to-ts';
 import type { ValidateFunction } from 'ajv';
 
-type Compiler = <Data = unknown>(
+type Compile = <Data = unknown>(
   schema: JSONSchema,
   _meta?: boolean,
 ) => ValidateFunction<Data>;
 
-export const wrapAjvCompilerWithTypeProvider =
+export const wrapAjvCompileWithTypeProvider =
   <FromSchemaUserOptions extends FromSchemaOptions = FromSchemaDefaultOptions>(
-    compiler: Compiler,
+    compiler: Compile,
   ) =>
   <
     ForcedData = void,

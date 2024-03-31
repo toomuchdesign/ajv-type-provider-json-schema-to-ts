@@ -1,13 +1,13 @@
 import { describe, it, expect, expectTypeOf } from 'vitest';
 import Ajv from 'ajv';
-import { wrapAjvCompilerWithTypeProvider } from '../index';
+import { wrapAjvCompileWithTypeProvider } from '../index';
 
 const ajv = new Ajv();
 
-describe('wrapAjvCompilerWithTypeProvider', () => {
+describe('wrapAjvCompileWithTypeProvider', () => {
   describe('successful validation', () => {
     it('provides expected type guard and validator props', () => {
-      const compile = wrapAjvCompilerWithTypeProvider(ajv.compile.bind(ajv));
+      const compile = wrapAjvCompileWithTypeProvider(ajv.compile.bind(ajv));
       const schema = {
         type: 'object',
         properties: {
@@ -36,7 +36,7 @@ describe('wrapAjvCompilerWithTypeProvider', () => {
 
   describe('failing validation', () => {
     it('provides expected type guard and validator props', () => {
-      const compile = wrapAjvCompilerWithTypeProvider(ajv.compile.bind(ajv));
+      const compile = wrapAjvCompileWithTypeProvider(ajv.compile.bind(ajv));
       const schema = {
         type: 'object',
         properties: {
@@ -72,7 +72,7 @@ describe('wrapAjvCompilerWithTypeProvider', () => {
 
   describe('1st generic argument', () => {
     it('accepts json-schema-to-ts FromSchema options and customizes type inference', () => {
-      const compile = wrapAjvCompilerWithTypeProvider<{
+      const compile = wrapAjvCompileWithTypeProvider<{
         parseNotKeyword: true;
       }>(ajv.compile.bind(ajv));
       const schema = {
@@ -117,7 +117,7 @@ describe('wrapAjvCompilerWithTypeProvider', () => {
     // Register ref schema in ajv
     ajv.addSchema(userSchema);
 
-    const compile = wrapAjvCompilerWithTypeProvider<{
+    const compile = wrapAjvCompileWithTypeProvider<{
       // Register ref schema in type provider
       references: [typeof userSchema];
     }>(ajv.compile.bind(ajv));
@@ -137,7 +137,7 @@ describe('wrapAjvCompilerWithTypeProvider', () => {
 
   describe('"compiler" 1st generic argument', () => {
     it('accepts forced inferred type', () => {
-      const compile = wrapAjvCompilerWithTypeProvider(ajv.compile.bind(ajv));
+      const compile = wrapAjvCompileWithTypeProvider(ajv.compile.bind(ajv));
       const schema = {
         type: 'object',
         properties: {

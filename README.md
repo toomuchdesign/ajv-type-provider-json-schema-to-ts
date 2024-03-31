@@ -8,10 +8,10 @@ An [ajv](https://ajv.js.org/) type provider based on [json-schema-to-ts](https:/
 
 ```ts
 import Ajv from 'ajv';
-import { wrapAjvCompilerWithTypeProvider } from '@toomuchdesign/ajv-type-provider-json-schema-to-ts';
+import { wrapAjvCompileWithTypeProvider } from '@toomuchdesign/ajv-type-provider-json-schema-to-ts';
 
 const ajv = new Ajv();
-const compile = wrapAjvCompilerWithTypeProvider(ajv.compile.bind(ajv));
+const compile = wrapAjvCompileWithTypeProvider(ajv.compile.bind(ajv));
 
 const schema = {
   type: 'object',
@@ -43,12 +43,12 @@ npm i @toomuchdesign/ajv-type-provider-json-schema-to-ts
 
 ## API
 
-### `wrapAjvCompilerWithTypeProvider` options
+### `wrapAjvCompileWithTypeProvider` options
 
-`wrapAjvCompilerWithTypeProvider` accepts [json-schema-to-ts `FromSchema` options](https://github.com/ThomasAribart/json-schema-to-ts/blob/main/src/definitions/fromSchemaOptions.ts) to configure inferred types output:
+`wrapAjvCompileWithTypeProvider` accepts [json-schema-to-ts `FromSchema` options](https://github.com/ThomasAribart/json-schema-to-ts/blob/main/src/definitions/fromSchemaOptions.ts) to configure inferred types output:
 
 ```ts
-const compile = wrapAjvCompilerWithTypeProvider<{ parseNotKeyword: true }>(
+const compile = wrapAjvCompileWithTypeProvider<{ parseNotKeyword: true }>(
   ajv.compile.bind(ajv),
 );
 ```
@@ -77,7 +77,7 @@ const usersSchema = {
 // Register ref schema in ajv
 ajv.addSchema(userSchema);
 
-const compile = wrapAjvCompilerWithTypeProvider<{
+const compile = wrapAjvCompileWithTypeProvider<{
   // Register ref schema type provider
   references: [typeof userSchema];
 }>(ajv.compile.bind(ajv));
@@ -95,7 +95,7 @@ if (validate(data)) {
 The returned compiler accepts a generic which force the inferred of the returned validation function:
 
 ```ts
-const compile = wrapAjvCompilerWithTypeProvider(ajv.compile.bind(ajv));
+const compile = wrapAjvCompileWithTypeProvider(ajv.compile.bind(ajv));
 const schema = {
   type: 'object',
   properties: {
