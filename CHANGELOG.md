@@ -1,5 +1,12 @@
 # @toomuchdesign/ajv-type-provider-json-schema-to-ts
 
+## 0.3.0
+
+### Minor Changes
+
+- e47eef0: Rename API as `enhanceCompileWithTypeInference` and `enhanceValidateWithTypeInference`
+- e47eef0: Support `ajv.validate` method
+
 ## 0.2.0
 
 ### Minor Changes
