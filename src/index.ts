@@ -4,16 +4,20 @@ import type {
   FromSchemaOptions,
   JSONSchema,
 } from 'json-schema-to-ts';
-import type { ValidateFunction } from 'ajv';
+import type { ValidateFunction, Schema } from 'ajv';
 
+/**
+ * We should use `Ajv['compile']` type, here but sometimes TS seems to raise the following error:
+ * Type instantiation is excessively deep and possibly infinite.ts(2589)
+ */
 type Compile = <Data = unknown>(
-  schema: JSONSchema,
+  schema: Schema,
   _meta?: boolean,
 ) => ValidateFunction<Data>;
 
 export const enhanceCompileWithTypeInference =
   <FromSchemaUserOptions extends FromSchemaOptions = FromSchemaDefaultOptions>(
-    compiler: Compile,
+    compile: Compile,
   ) =>
   <
     Data = void,
@@ -24,10 +28,14 @@ export const enhanceCompileWithTypeInference =
   >(
     schema: Schema,
   ): ValidateFunction<InferredData> => {
-    return compiler(schema);
+    return compile(schema);
   };
 
-type Validate = (schema: JSONSchema, data: unknown) => boolean;
+/**
+ * We should use `Ajv['validate']` type, here but sometimes TS seems to raise the following error:
+ * Type instantiation is excessively deep and possibly infinite.ts(2589)
+ */
+type Validate = (schema: Schema, data: unknown) => boolean;
 
 export const enhanceValidateWithTypeInference =
   <FromSchemaUserOptions extends FromSchemaOptions = FromSchemaDefaultOptions>(
