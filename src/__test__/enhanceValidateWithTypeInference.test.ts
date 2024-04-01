@@ -1,13 +1,13 @@
 import { describe, it, expect, expectTypeOf } from 'vitest';
 import Ajv from 'ajv';
-import { wrapAjvCompilerWithTypeProvider } from '../index';
+import { enhanceValidateWithTypeInference } from '../index';
 
 const ajv = new Ajv();
 
-describe('wrapAjvCompilerWithTypeProvider', () => {
+describe('enhanceValidateWithTypeInference', () => {
   describe('successful validation', () => {
     it('provides expected type guard and validator props', () => {
-      const compile = wrapAjvCompilerWithTypeProvider(ajv.compile.bind(ajv));
+      const validate = enhanceValidateWithTypeInference(ajv.validate.bind(ajv));
       const schema = {
         type: 'object',
         properties: {
@@ -18,10 +18,9 @@ describe('wrapAjvCompilerWithTypeProvider', () => {
         additionalProperties: false,
       } as const;
 
-      const validate = compile(schema);
       const data: unknown = { foo: 6 };
 
-      if (validate(data)) {
+      if (validate(schema, data)) {
         expectTypeOf(data).toMatchTypeOf<{
           bar?: string;
           foo: number;
@@ -30,13 +29,13 @@ describe('wrapAjvCompilerWithTypeProvider', () => {
         expect.unreachable('Validation should not fail');
       }
 
-      expect(validate.errors).toBe(null);
+      expect(ajv.errors).toBe(null);
     });
   });
 
   describe('failing validation', () => {
     it('provides expected type guard and validator props', () => {
-      const compile = wrapAjvCompilerWithTypeProvider(ajv.compile.bind(ajv));
+      const validate = enhanceValidateWithTypeInference(ajv.validate.bind(ajv));
       const schema = {
         type: 'object',
         properties: {
@@ -47,16 +46,15 @@ describe('wrapAjvCompilerWithTypeProvider', () => {
         additionalProperties: false,
       } as const;
 
-      const validate = compile(schema);
       const data: unknown = { foo: 'wrong' };
 
-      if (validate(data)) {
+      if (validate(schema, data)) {
         expect.unreachable('Validation should not pass');
       } else {
         expectTypeOf(data).toBeUnknown();
       }
 
-      expect(validate.errors).toEqual([
+      expect(ajv.errors).toEqual([
         {
           instancePath: '/foo',
           keyword: 'type',
@@ -72,22 +70,22 @@ describe('wrapAjvCompilerWithTypeProvider', () => {
 
   describe('1st generic argument', () => {
     it('accepts json-schema-to-ts FromSchema options and customizes type inference', () => {
-      const compile = wrapAjvCompilerWithTypeProvider<{
+      const validate = enhanceValidateWithTypeInference<{
         parseNotKeyword: true;
-      }>(ajv.compile.bind(ajv));
+      }>(ajv.validate.bind(ajv));
       const schema = {
         type: 'array',
         items: [{ const: 1 }, { const: 2 }],
         additionalItems: false,
+        minItems: 2,
         not: {
           const: [1],
         },
       } as const;
 
-      const validate = compile(schema);
       const data: unknown = [1, 2];
 
-      if (validate(data)) {
+      if (validate(schema, data)) {
         expectTypeOf(data).toMatchTypeOf<[] | [1, 2]>();
       } else {
         expect.unreachable('Validation should not fail');
@@ -117,27 +115,26 @@ describe('wrapAjvCompilerWithTypeProvider', () => {
     // Register ref schema in ajv
     ajv.addSchema(userSchema);
 
-    const compile = wrapAjvCompilerWithTypeProvider<{
+    const validate = enhanceValidateWithTypeInference<{
       // Register ref schema in type provider
       references: [typeof userSchema];
-    }>(ajv.compile.bind(ajv));
+    }>(ajv.validate.bind(ajv));
 
-    const validate = compile(usersSchema);
     const data: unknown = [
       { name: 'foo', age: 3 },
       { name: 'bar', age: 4 },
     ];
 
-    if (validate(data)) {
+    if (validate(usersSchema, data)) {
       expectTypeOf(data).toMatchTypeOf<{ name: string; age: number }[]>();
     } else {
       expect.unreachable('Validation should not fail');
     }
   });
 
-  describe('"compiler" 1st generic argument', () => {
+  describe('"validate" 1st generic argument', () => {
     it('accepts forced inferred type', () => {
-      const compile = wrapAjvCompilerWithTypeProvider(ajv.compile.bind(ajv));
+      const validate = enhanceValidateWithTypeInference(ajv.validate.bind(ajv));
       const schema = {
         type: 'object',
         properties: {
@@ -148,10 +145,9 @@ describe('wrapAjvCompilerWithTypeProvider', () => {
         additionalProperties: false,
       } as const;
 
-      const validate = compile<{ hello: string }>(schema);
       const data: unknown = { foo: 6 };
 
-      if (validate(data)) {
+      if (validate<{ hello: string }>(schema, data)) {
         expectTypeOf(data).toMatchTypeOf<{ hello: string }>();
       } else {
         expect.unreachable('Validation should not fail');

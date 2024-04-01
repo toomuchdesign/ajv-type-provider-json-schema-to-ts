@@ -8,10 +8,10 @@ An [ajv](https://ajv.js.org/) type provider based on [json-schema-to-ts](https:/
 
 ```ts
 import Ajv from 'ajv';
-import { wrapAjvCompilerWithTypeProvider } from '@toomuchdesign/ajv-type-provider-json-schema-to-ts';
+import { enhanceCompileWithTypeInference } from '@toomuchdesign/ajv-type-provider-json-schema-to-ts';
 
 const ajv = new Ajv();
-const compile = wrapAjvCompilerWithTypeProvider(ajv.compile.bind(ajv));
+const compile = enhanceCompileWithTypeInference(ajv.compile.bind(ajv));
 
 const schema = {
   type: 'object',
@@ -43,13 +43,41 @@ npm i @toomuchdesign/ajv-type-provider-json-schema-to-ts
 
 ## API
 
-### `wrapAjvCompilerWithTypeProvider` options
+### `enhanceCompileWithTypeInference`
 
-`wrapAjvCompilerWithTypeProvider` accepts [json-schema-to-ts `FromSchema` options](https://github.com/ThomasAribart/json-schema-to-ts/blob/main/src/definitions/fromSchemaOptions.ts) to configure inferred types output:
+Enhance Ajv `compile` method with type inference:
 
 ```ts
-const compile = wrapAjvCompilerWithTypeProvider<{ parseNotKeyword: true }>(
+import Ajv from 'ajv';
+import { enhanceCompileWithTypeInference } from '@toomuchdesign/ajv-type-provider-json-schema-to-ts';
+
+const ajv = new Ajv();
+const compile = enhanceCompileWithTypeInference(ajv.compile.bind(ajv));
+```
+
+### `enhanceValidateWithTypeInference`
+
+Enhance Ajv `validate` method with type inference:
+
+```ts
+import Ajv from 'ajv';
+import { enhanceValidateWithTypeInference } from '@toomuchdesign/ajv-type-provider-json-schema-to-ts';
+
+const ajv = new Ajv();
+const validate = enhanceValidateWithTypeInference(ajv.validate.bind(ajv));
+```
+
+### Type provider options
+
+`enhanceCompileWithTypeInference` and `enhanceValidateWithTypeInference` accept a [json-schema-to-ts `FromSchema` option object](https://github.com/ThomasAribart/json-schema-to-ts/blob/main/src/definitions/fromSchemaOptions.ts) to configure inferred types output:
+
+```ts
+const compile = enhanceCompileWithTypeInference<{ parseNotKeyword: true }>(
   ajv.compile.bind(ajv),
+);
+
+const validate = enhanceValidateWithTypeInference<{ parseNotKeyword: true }>(
+  ajv.validate.bind(ajv),
 );
 ```
 
@@ -77,7 +105,7 @@ const usersSchema = {
 // Register ref schema in ajv
 ajv.addSchema(userSchema);
 
-const compile = wrapAjvCompilerWithTypeProvider<{
+const compile = enhanceCompileWithTypeInference<{
   // Register ref schema type provider
   references: [typeof userSchema];
 }>(ajv.compile.bind(ajv));
@@ -90,26 +118,18 @@ if (validate(data)) {
 }
 ```
 
-### `compiler` options
+## Developer notes
 
-The returned compiler accepts a generic which force the inferred of the returned validation function:
+The current API is completely decoupled from `Ajv`. This means enhancing `Ajv` methods singularly, bypassing their original type implementation.
+
+A different approach could consist of `Ajv` exposing a hook to provide external type inference implementation, as done with [Fastify's type providers](https://fastify.dev/docs/latest/Reference/Type-Providers/):
 
 ```ts
-const compile = wrapAjvCompilerWithTypeProvider(ajv.compile.bind(ajv));
-const schema = {
-  type: 'object',
-  properties: {
-    foo: { type: 'integer' },
-  },
-  required: ['foo'],
-} as const;
-const validate = compile<{ hello: string }>(schema);
-const data: unknown = { foo: 6 };
+import Ajv from 'ajv';
+import type { JsonSchemaToTsProvider } from '@toomuchdesign/ajv-type-provider-json-schema-to-ts';
 
-if (validate(data)) {
-  // Data type forced to be equal to the provided one
-  const expectedData: { hello: string } = data;
-}
+const ajv = new Ajv();
+const typedAjv = ajv.withTypeProvider<JsonSchemaToTsProvider>();
 ```
 
 ## Contributing
@@ -119,10 +139,6 @@ Any contribution should be provided with a `changesets` update:
 ```
 npx changeset
 ```
-
-## TODO
-
-- Consider support for non-sync validators
 
 [ci-badge]: https://github.com/toomuchdesign/ajv-type-provider-json-schema-to-ts/actions/workflows/ci.yml/badge.svg
 [ci]: https://github.com/toomuchdesign/ajv-type-provider-json-schema-to-ts/actions/workflows/ci.yml
