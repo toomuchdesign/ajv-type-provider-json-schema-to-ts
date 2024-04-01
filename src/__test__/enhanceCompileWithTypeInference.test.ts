@@ -136,7 +136,7 @@ describe('enhanceCompileWithTypeInference', () => {
     }
   });
 
-  describe('"compiler" 1st generic argument', () => {
+  describe('"compile" 1st generic argument', () => {
     it('accepts forced inferred type', () => {
       const compile = enhanceCompileWithTypeInference(ajv.compile.bind(ajv));
       const schema = {

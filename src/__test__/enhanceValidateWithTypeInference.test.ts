@@ -132,7 +132,7 @@ describe('enhanceValidateWithTypeInference', () => {
     }
   });
 
-  describe('"compiler" 1st generic argument', () => {
+  describe('"validate" 1st generic argument', () => {
     it('accepts forced inferred type', () => {
       const validate = enhanceValidateWithTypeInference(ajv.validate.bind(ajv));
       const schema = {
